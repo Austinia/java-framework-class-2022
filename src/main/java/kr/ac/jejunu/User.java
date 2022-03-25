@@ -1,6 +1,6 @@
 package kr.ac.jejunu;
 
-public class User {
+public class User { //그릇
     private Integer id; //setter getter 만들기 귀찮지만..
     private String name;
     private String password; //왜 프라이빗?

@@ -1,7 +1,6 @@
-package kr.ac.jejunu;
+package kr.ac.jejunu; //Refactor delegate
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public interface ConnectionMaker { //클래스 레벨의 추상화는 인터페이스

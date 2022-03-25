@@ -15,8 +15,8 @@ public class UserDaoTests {
         Integer id = 1;
         String name = "hulk";
         String password = "1234";
-
-        UserDao userDao = new UserDao(new JejuConnectionMaker());
+        DaoFactory daoFactory = new DaoFactory();
+        UserDao userDao = daoFactory.getUserDao(); //내가 왜 뭔지 NEW를 해줘야 해(의존성 갖기 싫어)
         User user = userDao.findById(id); //그릇
         assertThat(user.getId(), is(id));
         assertThat(user.getName(), is(name));
@@ -32,42 +32,8 @@ public class UserDaoTests {
         User user = new User();
         user.setName(name);
         user.setPassword(pasaword);
-
-        UserDao userDao = new UserDao(new JejuConnectionMaker());
-        userDao.insert(user); // name, password를 넣고 자동으로 만들어진 id도 가져오자.
-
-        assertThat(user.getId(), greaterThan(0)); // 0보다 큰 것?
-
-        User insertedUser = userDao.findById(user.getId());
-        assertThat(insertedUser.getName(), is(user.getName()));
-        assertThat(insertedUser.getPassword(), is(user.getPassword()));
-    }
-
-    //테스트 할 것
-    @Test
-    public void findByIdForHalla() throws SQLException, ClassNotFoundException {
-        Integer id = 1;
-        String name = "hulk";
-        String password = "1234";
-
-        UserDao userDao = new UserDao(new HallaConnectionMaker());
-        User user = userDao.findById(id); //그릇
-        assertThat(user.getId(), is(id));
-        assertThat(user.getName(), is(name));
-        assertThat(user.getPassword(), is(password));
-        //이제부터 빨간색을 지우자
-    }
-
-    @Test
-    public void insertForHalla() throws SQLException, ClassNotFoundException {
-        String pasaword = "1111";
-        String name = "hulk";
-
-        User user = new User();
-        user.setName(name);
-        user.setPassword(pasaword);
-
-        UserDao userDao = new UserDao(new HallaConnectionMaker());
+        DaoFactory daoFactory = new DaoFactory();
+        UserDao userDao = daoFactory.getUserDao(); //내가 왜 뭔지 NEW를 해줘야 해(의존성 갖기 싫어)
         userDao.insert(user); // name, password를 넣고 자동으로 만들어진 id도 가져오자.
 
         assertThat(user.getId(), greaterThan(0)); // 0보다 큰 것?

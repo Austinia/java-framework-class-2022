@@ -3,10 +3,10 @@ package kr.ac.jejunu;
 import java.sql.*;
 
 public class UserDao {
-    private final ConnectionMaker connectionMaker;
+    private final ConnectionMaker connectionMaker; //인터페이스를 쓸건데
 
     public UserDao(ConnectionMaker connectionMaker) {
-        this.connectionMaker = connectionMaker;
+        this.connectionMaker = connectionMaker; //의존성은 만드는 녀석들에게 맡길게
     }
 
     public User findById(Integer id) throws SQLException, ClassNotFoundException {
@@ -49,7 +49,7 @@ public class UserDao {
         connection.close();
     }
 
-    public Connection getConnection() throws ClassNotFoundException, SQLException {
+    public Connection getConnection() throws ClassNotFoundException, SQLException { //Refactor delegate
         return connectionMaker.getConnection();
     };
 }

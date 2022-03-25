@@ -1,11 +1,13 @@
 package kr.ac.jejunu;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
-public class HallaUserDao extends UserDao {
+public class JejuConnectionMaker implements ConnectionMaker {
     @Override
     public Connection getConnection() throws ClassNotFoundException, SQLException {
-                //MySQL Driver 로딩
+        //MySQL Driver 로딩
         Class.forName("com.mysql.cj.jdbc.Driver");
         //커넥션
         return DriverManager.getConnection(

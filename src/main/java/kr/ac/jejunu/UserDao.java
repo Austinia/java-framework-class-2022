@@ -1,55 +1,150 @@
 package kr.ac.jejunu;
 
+import javax.sql.DataSource;
 import java.sql.*;
 
 public class UserDao {
-    private final ConnectionMaker connectionMaker; //인터페이스를 쓸건데
+    private final DataSource dataSource; //인터페이스를 쓸건데
 
-    public UserDao(ConnectionMaker connectionMaker) {
-        this.connectionMaker = connectionMaker; //의존성은 만드는 녀석들에게 맡길게
+    public UserDao(DataSource dataSource) {
+        this.dataSource = dataSource; //의존성은 만드는 녀석들에게 맡길게, 생성자
     }
 
-    public User findById(Integer id) throws SQLException, ClassNotFoundException {
-        Connection connection = connectionMaker.getConnection();
-        //sql 작성
-        PreparedStatement preparedStatement = connection.prepareStatement("select * from userinfo where id = ?");
-        preparedStatement.setInt(1, id);
-        //sql 실행
-        ResultSet resultSet = preparedStatement.executeQuery();
-        resultSet.next();
-        //User 에 데이터 매핑
-        User user = new User();
-        user.setId(resultSet.getInt("id"));
-        user.setName(resultSet.getString("name"));
-        user.setPassword(resultSet.getString("password"));
-        //자원 해지
-        resultSet.close();
-        preparedStatement.close();
-        connection.close();
+    public User findById(Integer id) throws SQLException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        User user = null;
+        try {
+            connection = dataSource.getConnection();
+            //sql 작성
+            preparedStatement = connection.prepareStatement("select * from userinfo where id = ?");
+            preparedStatement.setInt(1, id);
+            //sql 실행
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                //User 에 데이터 매핑
+                user = new User();
+                user.setId(resultSet.getInt("id"));
+                user.setName(resultSet.getString("name"));
+                user.setPassword(resultSet.getString("password"));
+            }
+            ;
+        } finally {
+            //자원 해지
+            try {
+                resultSet.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                preparedStatement.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                connection.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
         //User 리턴
         return user;
     }
 
     public void insert(User user) throws ClassNotFoundException, SQLException {
-        Connection connection = connectionMaker.getConnection();
-        //sql 작성
-        PreparedStatement preparedStatement = connection.prepareStatement("insert into userinfo(name, password) values (?, ?)",
-                Statement.RETURN_GENERATED_KEYS); // DB에서 시퀀스로 만들어낸 데이터를 가져오는 기능
-        preparedStatement.setString(1, user.getName());
-        preparedStatement.setString(2, user.getPassword());
-        //sql 실행
-        preparedStatement.executeUpdate();
-        ResultSet resultSet = preparedStatement.getGeneratedKeys();
-        resultSet.next();
-        //User 에 데이터 매핑
-        user.setId(resultSet.getInt(1));
-        //자원 해지
-        resultSet.close();
-        preparedStatement.close();
-        connection.close();
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = dataSource.getConnection();
+            //sql 작성
+            preparedStatement = connection.prepareStatement("insert into userinfo(name, password) values (?, ?)",
+                    Statement.RETURN_GENERATED_KEYS); // DB에서 시퀀스로 만들어낸 데이터를 가져오는 기능
+            preparedStatement.setString(1, user.getName());
+            preparedStatement.setString(2, user.getPassword());
+            //sql 실행
+            preparedStatement.executeUpdate();
+            resultSet = preparedStatement.getGeneratedKeys();
+            resultSet.next();
+            //User 에 데이터 매핑
+            user.setId(resultSet.getInt(1));
+        } finally {
+            //자원 해지
+            try {
+                resultSet.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                preparedStatement.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                connection.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public Connection getConnection() throws ClassNotFoundException, SQLException { //Refactor delegate
-        return connectionMaker.getConnection();
-    };
+        return dataSource.getConnection();
+    }
+
+    public void update(User user) throws SQLException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = dataSource.getConnection();
+            //sql 작성
+            preparedStatement = connection.prepareStatement("UPDATE userinfo SET name = ?, password = ? WHERE id = ?"); // DB에서 시퀀스로 만들어낸 데이터를 가져오는 기능
+            preparedStatement.setString(1, user.getName());
+            preparedStatement.setString(2, user.getPassword());
+            preparedStatement.setInt(3, user.getId());
+            //sql 실행
+            preparedStatement.executeUpdate();
+        } finally {
+            //자원 해지
+            try {
+                preparedStatement.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                connection.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void delete(Integer id) throws SQLException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = dataSource.getConnection();
+            //sql 작성
+            preparedStatement = connection.prepareStatement("DELETE FROM userinfo WHERE id = ?"); // DB에서 시퀀스로 만들어낸 데이터를 가져오는 기능
+            preparedStatement.setInt(1, id);
+            //sql 실행
+            preparedStatement.executeUpdate();
+        } finally {
+            //자원 해지
+            try {
+                preparedStatement.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                connection.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    ;
 }

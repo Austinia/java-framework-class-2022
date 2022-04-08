@@ -1,10 +1,7 @@
 package kr.ac.jejunu;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class JdbcContext {
     private final DataSource dataSource;//콩에서 받은 것
@@ -107,5 +104,45 @@ public class JdbcContext {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void update(String sql, Object[] params) throws SQLException {
+        StatementStrategy statementStrategy = connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    sql
+            );
+            for (int i = 0; i < params.length; i++) {
+                preparedStatement.setObject(i + 1, params[i]);
+            }
+            return preparedStatement;
+        };
+        jdbcContextForUpdate(statementStrategy);
+    }
+
+    void insert(User user, String sql, Object[] params) throws SQLException {
+        StatementStrategy statementStrategy = connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    sql
+                    , Statement.RETURN_GENERATED_KEYS
+            );
+            for (int i = 0; i < params.length; i++) {
+                preparedStatement.setObject(i + 1, params[i]);
+            }
+            return preparedStatement;
+        }; //변하는 것을 추출 Strategy
+        jdbcContextForInsert(user, statementStrategy); //변하지 않은 것을 추출 ConText
+    }
+
+    User find(String sql, Object[] params) throws SQLException {
+        StatementStrategy statementStrategy = connection -> { //Template callback pattern, 람다
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    sql
+            );
+            for (int i = 0; i < params.length; i++) {
+                preparedStatement.setObject(i + 1, params[i]);
+            }
+            return preparedStatement;
+        }; //id(dependency)를 생성자로 넘김
+        return jdbcContextForFind(statementStrategy);
     }
 }

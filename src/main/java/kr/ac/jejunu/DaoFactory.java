@@ -1,4 +1,4 @@
-package kr.ac.jejunu; //의존성은 여기에 다 모여서 얘가 모든 의존성을 다 다뤘으면 좋겠네 new를 내가 다 한다!
+package kr.ac.jejunu;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -8,22 +8,24 @@ import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import javax.sql.DataSource;
 import java.sql.Driver;
 
-@Configuration //설정하겠다
+@Configuration
 public class DaoFactory {
-    @Value("${db.drivername}") //인펜던시를 환경변수에 던진다. 환경변수는 설정에 있음
-    private String driverClassName; // "com.mysql.cj.jdbc.Driver";
+    @Value("${db.drivername}")
+    private String driverClassName; //= "com.mysql.cj.jdbc.Driver";
     @Value("${db.url}")
-    private String url; // "jdbc:mysql://localhost:3306/jejunu";
+    private String url; //= "jdbc:mysql://192.168.151.176:3306/jeju?serverTimezone=UTC";
     @Value("${db.username}")
-    private String username; // "jeju";
+    private String username; //= "jeju";
     @Value("${db.password}")
-    private String password; // "jeju";
-
-    @Bean //스프링에서 대신 뉴해주고 관리해주는 콩
+    private String password; //= "jejupw";
+    @Bean //콩은 스프링이 의존성 주입을 할 수 있게 해주는 것
     public UserDao userDao() throws ClassNotFoundException {
-        return new UserDao(dataSource());
-    } //?
-
+        return new UserDao(jdbcContext());
+    }
+    @Bean
+    public JdbcContext jdbcContext() throws ClassNotFoundException {
+        return new JdbcContext(dataSource());
+    }
     @Bean
     public DataSource dataSource() throws ClassNotFoundException {
         SimpleDriverDataSource dataSource = new SimpleDriverDataSource();

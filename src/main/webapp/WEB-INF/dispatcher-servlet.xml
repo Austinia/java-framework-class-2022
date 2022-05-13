@@ -8,6 +8,7 @@
        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
        http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context.xsd
 ">
+    <annotation-driven /> <!-- resources로 인해 어노테이션이 작동을 안하는 걸 해결 해줌 -->
     <context:component-scan base-package="jejunu" /> <!-- @붙어있는걸 bean으로 등록(따로 등록 안해도 된다) -->
     <beans:bean name="/user" class="jejunu.SimpleController" />
 
@@ -25,6 +26,7 @@
             </beans:bean>
         </beans:property>
     </beans:bean>
+    <resources mapping="/images/**" location="/WEB-INF/static/" /> <!-- mapping요청은 location으로 보내진다-->
 
 
 </beans:beans>

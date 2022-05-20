@@ -15,6 +15,7 @@ import java.io.*;
 @Controller
 //@RequestMapping("/api") parent형식으로 동작
 public class UserController {
+    //user GET
     @RequestMapping("/user")
     public ModelAndView user(@RequestParam("id") Integer id,
                              @RequestParam("name") String name
@@ -30,11 +31,13 @@ public class UserController {
         return modelAndView;
     }
 
+    //upload GET
     @RequestMapping("/upload") //default로 같은 뷰네임 인식해서 전달
     public void upload() {
 
     }
 
+    //upload POST
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     public ModelAndView upload(@RequestParam MultipartFile file, HttpServletRequest request) throws IOException {
         //파일 전송 구현
@@ -48,6 +51,7 @@ public class UserController {
         return modelAndView;
     }
 
+    //에러 핸들링
     @ExceptionHandler(Exception.class)
     public ModelAndView error(Exception e) {
         ModelAndView modelAndView = new ModelAndView("error");
